@@ -1,6 +1,7 @@
-//store gameboard as array inside of gameboard object
+//goal: have as little global code as possible
+//Rule of thumb: if need ONE of something, use a module. If need MULTIPLE of something, create with factories
 
-//store players in objects
+//store players in objects -> use factory functions
 const playerFactory = (name, mark) => {
     return {name, mark};
 }
@@ -9,14 +10,26 @@ const playerFactory = (name, mark) => {
 //wrapped in an Immediately Invoked Function Expression
 const gameBoardMod = (() => {
     let gameBoard = {
-        playerTurn: true,
-        numMarks: 0, 
-        board: [[0,2,1], [4,1,6], [1,8,9]]
+        playerOneTurn: true,
+        numMarks: 0,
+        btnO: document.getElementById('O'), 
+        btnX: document.getElementById('X'),
+        board: [[2,3,4],[5,6,7],[8,9,10]]
     };
 
-    //let _board = [[1,1,1], [0,0,0], [1,1,1]]; //need to store moves in arr
-    //determine winner -> if array reaches certain filled start checking for winner
+    gameBoard.btnO.addEventListener('click', getMark);
+    gameBoard.btnX.addEventListener('click', getMark);
+
+    function getPlayerInfo(e){
+        let playerName = document.getElementById('name').value;
+        let playerMark = e.target.id;
+        
+        playerFactory(playerName,playerMark);
+    }
+
+    //determine winner -> if array reaches certain filled start checking for winner?
     const determineWinner = () => {
+        //should check for ties also (at end)
 
         //check diagonal first -- might be best to leave diagonals out of loop
         if((gameBoard.board[0][0] === gameBoard.board[1][1]) && (gameBoard.board[1][1] === gameBoard.board[2][2]) ||
@@ -24,24 +37,38 @@ const gameBoardMod = (() => {
                 console.log("true");
         }
 
+        
+        //Check all horizontal and vertical to see if 3 in a row
         for(let i=0; i<3; i++){
             for(let j=0; j<1; j++){
-                if((gameBoard.board[i][j] === gameBoard.board[i][j+1]) && (gameBoard.board[i][j+1] === gameBoard.board[i][j+2]) || //check all horizontal
-                    (gameBoard.board[j][i] === gameBoard.board[j+1][i]) && (gameBoard.board[j+1][i] === gameBoard.board[j+2][i])){ //check all vertical
+                if((gameBoard.board[i][j] === gameBoard.board[i][j+1]) && (gameBoard.board[i][j+1] === gameBoard.board[i][j+2]) || //horizontal
+                    (gameBoard.board[j][i] === gameBoard.board[j+1][i]) && (gameBoard.board[j+1][i] === gameBoard.board[j+2][i])){ //vertical
                         console.log("true"); 
                 }
             }
-        } 
+        }
+
+        //Need way to track number of marks
     };
  
     //start new game
     const startGame = () => {
-
+        resetGame();
+        //need to also visually reset board
     };
 
     //reset game
     const resetGame = () => {
+        gameBoard.playerOneTurn = true;
+        gameBoard.numMarks = 0;
+        gameBoard.board = [[2,3,4],[5,6,7],[8,9,10]];
 
+        renderGame();
+    };
+
+    const renderGame = () => {
+        //display board based off gameBoard.board
+        //render only strings
     };
     
     //start with dummy data in arr to test
@@ -52,16 +79,20 @@ const gameBoardMod = (() => {
    
 })();
 
+//------------------------------------------------------------- Should these be global or in a module?
 
-gameBoardMod.determineWinner();
+// btnO.addEventListener('click', getPlayerInfo);
+// btnX.addEventListener('click', getPlayerInfo);
+
+// function getPlayerInfo(e){
+//     let playerName = document.getElementById('name').value;
+//     let playerMark = e.target.id;
+    
+//     playerFactory(playerName,playerMark);
+// }
+//-------------------------------------------------------------
 
 
-//use object to control game flow
-
-//goal: have as little global code as possible
-//Rule of thumb: if need ONE of something, use a module. If need MULTIPLE of something, create with factories
-
-//set up HTML
 //write JS function to render contents of array (manually fill array for now)
 //make functions that allow players to mark to specific spot on board 
 //check for game over (3 in a row and tie)
