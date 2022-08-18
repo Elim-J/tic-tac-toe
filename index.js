@@ -6,25 +6,45 @@ const playerFactory = (name, mark) => {
     return {name, mark};
 }
 
+//stores everything to do with the player
+const playerModule = (() => {
+    let player = {
+
+    };
+})();
+
+//stores everything to do with display
+const displayController = (() => {
+
+})();
 //Note about modules: They are different from factory functions because they are 
 //wrapped in an Immediately Invoked Function Expression
 const gameBoardMod = (() => {
     let gameBoard = {
         playerOneTurn: true,
+        player: null,
         numMarks: 0,
         btnO: document.getElementById('O'), 
         btnX: document.getElementById('X'),
         board: [[2,3,4],[5,6,7],[8,9,10]]
     };
 
-    gameBoard.btnO.addEventListener('click', getMark);
-    gameBoard.btnX.addEventListener('click', getMark);
+    //breadcrumb: I got playerfactory to store new player inside of gameboard object as player.
+
+    gameBoard.btnO.addEventListener('click', getPlayerInfo);
+    gameBoard.btnX.addEventListener('click', getPlayerInfo);
 
     function getPlayerInfo(e){
         let playerName = document.getElementById('name').value;
         let playerMark = e.target.id;
         
-        playerFactory(playerName,playerMark);
+        const player = playerFactory(playerName,playerMark);
+        console.log(gameBoard.player);
+        gameBoard.player = player;
+        console.log(gameBoard.player);
+
+        gameBoard.btnO.removeEventListener('click', getPlayerInfo);
+        gameBoard.btnX.removeEventListener('click', getPlayerInfo);
     }
 
     //determine winner -> if array reaches certain filled start checking for winner?
@@ -78,19 +98,6 @@ const gameBoardMod = (() => {
     }
    
 })();
-
-//------------------------------------------------------------- Should these be global or in a module?
-
-// btnO.addEventListener('click', getPlayerInfo);
-// btnX.addEventListener('click', getPlayerInfo);
-
-// function getPlayerInfo(e){
-//     let playerName = document.getElementById('name').value;
-//     let playerMark = e.target.id;
-    
-//     playerFactory(playerName,playerMark);
-// }
-//-------------------------------------------------------------
 
 
 //write JS function to render contents of array (manually fill array for now)
