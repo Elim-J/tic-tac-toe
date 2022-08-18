@@ -3,30 +3,35 @@
 
 //stores everything to do with the player
 const playerModule = (() => {
-    let player = null; //just have one player for now. If more then one player, then have players object to store all players
+    let _player = null; //just have one player for now. If more then one player, then have players object to store all players
 
     const playerFactory = (name, mark) => {
         //Only store data if user enters valid data
         if(name != ''){
-            player = {name, mark};
+            _player = {name, mark};
         }
     }
 
-    return { playerFactory, };
+    const getPlayerMark = () => {
+        if(_player != null){
+            return _player.mark;
+        }
+    }
+
+    return { playerFactory, getPlayerMark };
 })();
 
 //stores everything to do with display
 const displayController = (() => {
-    const controller = {
+    const _controller = {
         btnO: document.getElementById('O'), 
         btnX: document.getElementById('X'),
     }
 
-    controller.btnO.addEventListener('click', getPlayerInfo);
-    controller.btnX.addEventListener('click', getPlayerInfo);
+    _controller.btnO.addEventListener('click', getPlayerInfo);
+    _controller.btnX.addEventListener('click', getPlayerInfo);
 
     function getPlayerInfo(e){
-       
         let playerName = document.getElementById('name').value;
         let playerMark = e.target.id;
         
@@ -34,18 +39,31 @@ const displayController = (() => {
 
         //Remove event listeners only after player entered name
         if(playerName != ''){
-            controller.btnO.removeEventListener('click', getPlayerInfo);
-            controller.btnX.removeEventListener('click', getPlayerInfo);
+            _controller.btnO.removeEventListener('click', getPlayerInfo);
+            _controller.btnX.removeEventListener('click', getPlayerInfo);
+        } 
+    }
+
+    //Breadcrumb: Also need to figure out how to deal with array to keep track/determine winner. Need to make ID correspond with array. Need to create a computer to play against.
+    function getGrid(e){
+        console.log(e);
+        console.log(e.target.textContent);
+        
+        if(e.target.className === "grid-el" && e.target.textContent === ""){
+            e.target.textContent = playerModule.getPlayerMark();
         }
         
     }
+
+    let tmp = document.getElementById("grid");
+    tmp.addEventListener('click', getGrid);
 
 })();
 
 //Note about modules: They are different from factory functions because they are 
 //wrapped in an Immediately Invoked Function Expression
 const gameBoardMod = (() => {
-    let gameBoard = {
+    let _gameBoard = {
         playerOneTurn: true,
         numMarks: 0,
         board: [[2,3,4],[5,6,7],[8,9,10]]
@@ -56,8 +74,8 @@ const gameBoardMod = (() => {
         //should check for ties also (at end)
 
         //check diagonal first -- might be best to leave diagonals out of loop
-        if((gameBoard.board[0][0] === gameBoard.board[1][1]) && (gameBoard.board[1][1] === gameBoard.board[2][2]) ||
-            (gameBoard.board[0][2] === gameBoard.board[1][1]) && (gameBoard.board[1][1] === gameBoard.board[2][0])){
+        if((_gameBoard.board[0][0] === _gameBoard.board[1][1]) && (_gameBoard.board[1][1] === _gameBoard.board[2][2]) ||
+            (_gameBoard.board[0][2] === _gameBoard.board[1][1]) && (_gameBoard.board[1][1] === _gameBoard.board[2][0])){
                 console.log("true");
         }
 
@@ -65,8 +83,8 @@ const gameBoardMod = (() => {
         //Check all horizontal and vertical to see if 3 in a row
         for(let i=0; i<3; i++){
             for(let j=0; j<1; j++){
-                if((gameBoard.board[i][j] === gameBoard.board[i][j+1]) && (gameBoard.board[i][j+1] === gameBoard.board[i][j+2]) || //horizontal
-                    (gameBoard.board[j][i] === gameBoard.board[j+1][i]) && (gameBoard.board[j+1][i] === gameBoard.board[j+2][i])){ //vertical
+                if((_gameBoard.board[i][j] === _gameBoard.board[i][j+1]) && (_gameBoard.board[i][j+1] === _gameBoard.board[i][j+2]) || //horizontal
+                    (_gameBoard.board[j][i] === _gameBoard.board[j+1][i]) && (_gameBoard.board[j+1][i] === _gameBoard.board[j+2][i])){ //vertical
                         console.log("true"); 
                 }
             }
@@ -83,9 +101,9 @@ const gameBoardMod = (() => {
 
     //reset game
     const resetGame = () => {
-        gameBoard.playerOneTurn = true;
-        gameBoard.numMarks = 0;
-        gameBoard.board = [[2,3,4],[5,6,7],[8,9,10]];
+        _gameBoard.playerOneTurn = true;
+        _gameBoard.numMarks = 0;
+        _gameBoard.board = [[2,3,4],[5,6,7],[8,9,10]];
 
         renderGame();
     };
