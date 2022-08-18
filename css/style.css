@@ -1,0 +1,14 @@
+.grid {
+    display: grid;
+    gap: 5px;
+    grid-template: repeat(3, .1fr) / repeat(3, .1fr);
+
+    height:500px;
+    width: 500px;
+}
+
+.grid-el {
+    background-color: steelblue;
+    height: 7rem;
+    width: 7rem;
+}
