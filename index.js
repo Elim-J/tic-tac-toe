@@ -1,51 +1,55 @@
 //goal: have as little global code as possible
 //Rule of thumb: if need ONE of something, use a module. If need MULTIPLE of something, create with factories
 
-//store players in objects -> use factory functions
-const playerFactory = (name, mark) => {
-    return {name, mark};
-}
-
 //stores everything to do with the player
 const playerModule = (() => {
-    let player = {
+    let player = null; //just have one player for now. If more then one player, then have players object to store all players
 
-    };
+    const playerFactory = (name, mark) => {
+        //Only store data if user enters valid data
+        if(name != ''){
+            player = {name, mark};
+        }
+    }
+
+    return { playerFactory, };
 })();
 
 //stores everything to do with display
 const displayController = (() => {
+    const controller = {
+        btnO: document.getElementById('O'), 
+        btnX: document.getElementById('X'),
+    }
+
+    controller.btnO.addEventListener('click', getPlayerInfo);
+    controller.btnX.addEventListener('click', getPlayerInfo);
+
+    function getPlayerInfo(e){
+       
+        let playerName = document.getElementById('name').value;
+        let playerMark = e.target.id;
+        
+        playerModule.playerFactory(playerName, playerMark);  //playerFactory stores the player inside of the playerModule's object
+
+        //Remove event listeners only after player entered name
+        if(playerName != ''){
+            controller.btnO.removeEventListener('click', getPlayerInfo);
+            controller.btnX.removeEventListener('click', getPlayerInfo);
+        }
+        
+    }
 
 })();
+
 //Note about modules: They are different from factory functions because they are 
 //wrapped in an Immediately Invoked Function Expression
 const gameBoardMod = (() => {
     let gameBoard = {
         playerOneTurn: true,
-        player: null,
         numMarks: 0,
-        btnO: document.getElementById('O'), 
-        btnX: document.getElementById('X'),
         board: [[2,3,4],[5,6,7],[8,9,10]]
     };
-
-    //breadcrumb: I got playerfactory to store new player inside of gameboard object as player.
-
-    gameBoard.btnO.addEventListener('click', getPlayerInfo);
-    gameBoard.btnX.addEventListener('click', getPlayerInfo);
-
-    function getPlayerInfo(e){
-        let playerName = document.getElementById('name').value;
-        let playerMark = e.target.id;
-        
-        const player = playerFactory(playerName,playerMark);
-        console.log(gameBoard.player);
-        gameBoard.player = player;
-        console.log(gameBoard.player);
-
-        gameBoard.btnO.removeEventListener('click', getPlayerInfo);
-        gameBoard.btnX.removeEventListener('click', getPlayerInfo);
-    }
 
     //determine winner -> if array reaches certain filled start checking for winner?
     const determineWinner = () => {
@@ -86,6 +90,7 @@ const gameBoardMod = (() => {
         renderGame();
     };
 
+    //should this be in displayController instead?
     const renderGame = () => {
         //display board based off gameBoard.board
         //render only strings
@@ -102,8 +107,8 @@ const gameBoardMod = (() => {
 
 //write JS function to render contents of array (manually fill array for now)
 //make functions that allow players to mark to specific spot on board 
-//check for game over (3 in a row and tie)
-//clean up interface to allow players to add their names
+
+
 //include start/restart button
 //congratz for winning player
 //(create AI computer?)
