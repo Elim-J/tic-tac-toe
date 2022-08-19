@@ -44,19 +44,24 @@ const displayController = (() => {
         } 
     }
 
-    //Breadcrumb: Also need to figure out how to deal with array to keep track/determine winner. Need to make ID correspond with array. Need to create a computer to play against.
-    function getGrid(e){
-        console.log(e);
-        console.log(e.target.textContent);
+    //Breadcrumb: Also need to figure out how to deal with array to keep track/determine winner. Need to make IDs correspond with array -> Not sure how to do this yet, maybe pseudo data. Need to create a computer to play against.
         
-        if(e.target.className === "grid-el" && e.target.textContent === ""){
+    function markGrid(e){
+        //for now lets just assume that player marks are 0
+
+        console.log(e.target.dataset.row); //chooses arr
+        console.log(e.target.id);//chooses element in arr
+        
+        //If it is square on grid and the square doesn't have any mark...
+        if((e.target.className === "grid-el" && e.target.textContent === "")){
             e.target.textContent = playerModule.getPlayerMark();
+            gameBoardMod.updateBoard(e.target.dataset.row, e.target.id);
         }
         
     }
 
-    let tmp = document.getElementById("grid");
-    tmp.addEventListener('click', getGrid);
+    let gridContainer = document.getElementById("grid");
+    gridContainer.addEventListener('click', markGrid);
 
 })();
 
@@ -64,14 +69,14 @@ const displayController = (() => {
 //wrapped in an Immediately Invoked Function Expression
 const gameBoardMod = (() => {
     let _gameBoard = {
-        playerOneTurn: true,
+        playerOneTurn: false,
         numMarks: 0,
         board: [[2,3,4],[5,6,7],[8,9,10]]
     };
 
     //determine winner -> if array reaches certain filled start checking for winner?
     const determineWinner = () => {
-        //should check for ties also (at end)
+        
 
         //check diagonal first -- might be best to leave diagonals out of loop
         if((_gameBoard.board[0][0] === _gameBoard.board[1][1]) && (_gameBoard.board[1][1] === _gameBoard.board[2][2]) ||
@@ -89,10 +94,18 @@ const gameBoardMod = (() => {
                 }
             }
         }
-
-        //Need way to track number of marks
+        
+        //should check for ties also (at end)
+        if(_gameBoard.numMarks === 9){
+            console.log("If reaches to this point, and doesn't console.log earlier, then it is a tie.");
+        }
     };
- 
+    
+    const updateBoard = (row, id) => {
+        _gameBoard.board[row][id] = 0;  //If player selects a particular square, update gameboard
+        _gameBoard.numMarks++;
+    };
+
     //start new game
     const startGame = () => {
         resetGame();
@@ -101,7 +114,7 @@ const gameBoardMod = (() => {
 
     //reset game
     const resetGame = () => {
-        _gameBoard.playerOneTurn = true;
+        _gameBoard.playerOneTurn = false;
         _gameBoard.numMarks = 0;
         _gameBoard.board = [[2,3,4],[5,6,7],[8,9,10]];
 
@@ -117,7 +130,7 @@ const gameBoardMod = (() => {
     //start with dummy data in arr to test
     return {
         //Return methods that need to be used outside of module
-        startGame, resetGame, determineWinner
+        startGame, resetGame, determineWinner, updateBoard
     }
    
 })();
